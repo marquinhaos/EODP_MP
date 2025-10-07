@@ -7,7 +7,7 @@ from l1c.src.l1c import l1c
 auxdir = "C:/Users/Marcos Porto/Desktop/EODP/EODP_MP/auxiliary"
 # GM dir + L1B dir
 indir = 'C:/Users/Marcos Porto/Desktop/EODP/EODP-TS-L1C/input'
-outdir = 'C:/Users/Marcos Porto/Desktop/EODP/EODP-TS-L1C/myout'
+outdir = 'C:/Users/Marcos Porto/Desktop/EODP/EODP-TS-L1C/myoutput'
 
 # Initialise the ISM
 myL1c = l1c(auxdir, indir, outdir)
