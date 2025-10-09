@@ -104,7 +104,7 @@ class opticalPhase(initIsm):
         :return: TOA image in irradiances [mW/m2]
         """
         # TODO
-        return toa_ft
+        return toa
 
     def spectralIntegration(self, sgm_toa, sgm_wv, band):
         """
@@ -114,7 +114,26 @@ class opticalPhase(initIsm):
         :param band: band
         :return: TOA image 2D in radiances [mW/m2]
         """
-        # TODO
+        # Read the ISRF and normalise it with its integral
+        # ------------------------------------------------------------
+        # wv in [um]
+        isrf, wv_isrf = readIsrf(self.auxdir + '\\' + self.ismConfig.isrffile, band)
+        wv_isrf = wv_isrf * 1000  # Converts to [nm]
+
+        isrf_norm = isrf / sum(isrf)
+        toa = np.zeros((sgm_toa.shape[0], sgm_toa.shape[1]))
+        for ialt in range(sgm_toa.shape[0]):
+            for iact in range(sgm_toa.shape[1]):
+                cs = interp1d(sgm_wv, sgm_toa[ialt, iact, :], fill_value=(0, 0), bounds_error=False)
+                toa_i = cs(wv_isrf)
+
+                # 1. point by point mult with isrf NORMALIZED
+                aux = toa_i * isrf_norm
+                # 2. then sum the resulting vector
+                sum_aux = sum(aux)
+                # 3. then assign to the toa[ialt, iact]
+                toa[ialt, iact] = sum_aux
+
         return toa
 
 

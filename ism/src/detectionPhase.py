@@ -96,18 +96,17 @@ class detectionPhase(initIsm):
 
 
     def irrad2Phot(self, toa, area_pix, tint, wv):
-        """
-        Conversion of the input Irradiances to Photons
-        :param toa: input TOA in irradiances [mW/m2]
-        :param area_pix: Pixel area [m2]
-        :param tint: Integration time [s]
-        :param wv: Central wavelength of the band [m]
-        :return: Toa in photons
-        """
-        #TODO
+
+        e_in =  toa * area_pix * tint * 0.001
+        e_phtonk = self.constants.h_planck * self.constants.speed_light / wv
+        toa_ph = e_in / e_phtonk
+
         return toa_ph
 
     def phot2Electr(self, toa, QE):
+
+        toae = toa * QE
+
         """
         Conversion of photons to electrons
         :param toa: input TOA in photons [ph]
@@ -118,6 +117,7 @@ class detectionPhase(initIsm):
         return toae
 
     def badDeadPixels(self, toa,bad_pix,dead_pix,bad_pix_red,dead_pix_red):
+        toa[:, 5] = toa[:, 5] * (1 - bad_pix_red) #copied from slides
         """
         Bad and dead pixels simulation
         :param toa: input toa in [e-]
@@ -131,6 +131,10 @@ class detectionPhase(initIsm):
         return toa
 
     def prnu(self, toa, kprnu):
+        kprnu = self.ismConfig.kprnu
+        prnu = np.random.normal(0, 1, toa.shape[1]) * kprnu
+        toa = toa * (1 + prnu)
+
         """
         Adding the PRNU effect
         :param toa: TOA pre-PRNU [e-]
@@ -142,6 +146,11 @@ class detectionPhase(initIsm):
 
 
     def darkSignal(self, toa, kdsnu, T, Tref, ds_A_coeff, ds_B_coeff):
+        kdsnu = self.ismConfig.kdsnu
+        dsnu = np.abs(np.random.normal(0, 1, toa.shape[1])) * kdsnu
+        sd = ds_A_coeff * (T / Tref)**3 * np.exp(-ds_B_coeff * ( 1/T - 1/Tref))
+        ds = sd * (1 + dsnu) #[e-]
+        toa = toa + ds
         """
         Dark signal simulation
         :param toa: TOA in [e-]

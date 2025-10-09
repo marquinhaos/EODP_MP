@@ -68,5 +68,5 @@ class videoChainPhase(initIsm):
         :return: toa in digital counts
         """
         #TODO
-        return toa_dn
+        return toa
 
