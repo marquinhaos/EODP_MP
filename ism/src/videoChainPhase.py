@@ -59,16 +59,10 @@ class videoChainPhase(initIsm):
         return toa
 
     def digitisation(self, toa, bit_depth, min_voltage, max_voltage):
-         #max number 4095
-        toa_dn = np.round((toa/(max_voltage - min_voltage))*(2**bit_depth-1))
-        """
-        Digitisation - conversion from Volts to Digital counts
-        :param toa: input toa in [V]
-        :param bit_depth: bit depth
-        :param min_voltage: minimum voltage
-        :param max_voltage: maximum voltage
-        :return: toa in digital counts
-        """
-        #TODO
+        #max number 4095
+        satvalue = 2 ** bit_depth - 1
+        toa_dn = np.round((toa/(max_voltage - min_voltage))*satvalue)
+        toa_dn = np.clip(toa_dn, 0, satvalue)
+
         return toa_dn
 
