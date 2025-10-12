@@ -92,7 +92,9 @@ class opticalPhase(initIsm):
         :param Tr: Optical transmittance [-]
         :return: TOA image in irradiances [mW/m2]
         """
-        # TODO
+        rad2irra = Tr * np.pi * (D / f) * (D / f) / 4
+        toa = toa * rad2irra
+
         return toa
 
 
@@ -103,8 +105,14 @@ class opticalPhase(initIsm):
         :param Hsys: System MTF
         :return: TOA image in irradiances [mW/m2]
         """
-        # TODO
-        return toa
+        GE = fft2(toa)
+        intermediate = fftshift(Hsys)
+        toa_1 = GE * intermediate
+        toa_ft = ifft2(toa_1)
+        # toa_imag = np.imag(toa_ft)
+        toa_ft = np.real(toa_ft)
+
+        return toa_ft
 
     def spectralIntegration(self, sgm_toa, sgm_wv, band):
         """

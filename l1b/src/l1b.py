@@ -82,5 +82,13 @@ class l1b(initL1b):
         return toa
 
     def plotL1bToa(self, toa_l1b, outputdir, band):
-        #TODO
+        mid_value = int(toa_l1b.shape[0] / 2)
+        fig, ax = plt.subplots()
+        ax.plot(toa_l1b[mid_value, :], 'b')
+        plt.suptitle('TOA_l1b')
+        plt.xlabel('Across Track [-]')
+        plt.ylabel('Radiances [mW/m2/sr]')
+        plt.grid(True)
+        # plt.show
+        fig.savefig(outputdir + '/l1b_toa_' + band + '_results.png')
         a=1 # dummy
